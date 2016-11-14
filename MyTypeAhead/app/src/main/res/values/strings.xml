@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">MyTypeAhead</string>
+    <string name="search">Search on Wikipedia</string>
+</resources>
