@@ -5,3 +5,6 @@ A search bar for wikipedia with live typeahead in Android.
 * `debounce` operator.
 * Maybe `Subject`. This is a seemingly controversial concept in Rx. I'm still investigating whether this is the correct abstraction to use in our example.
 
+Installation:
+* Need Android Studio version >= 2.1 to support lambda
+
