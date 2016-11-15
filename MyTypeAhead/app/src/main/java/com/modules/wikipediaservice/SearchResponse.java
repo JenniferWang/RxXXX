@@ -1,4 +1,4 @@
-package com.wikipediaservice;
+package com.modules.wikipediaservice;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
@@ -12,6 +12,8 @@ public class SearchResponse {
   public ArrayList<Entry> getEntries() {
     return mEntries;
   }
+
+  public SearchResponse() {}
 
   public SearchResponse(String searchedTerm, JsonParser jp) throws IOException {
     if (jp.nextToken() != JsonToken.START_ARRAY) {

@@ -1,4 +1,4 @@
-package com.example.jiyue.mytypeahead;
+package com.playground.typeahead;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -6,10 +6,10 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.EditText;
 import android.widget.TextView;
-import com.wikipediaservice.SearchResponse;
-import com.wikipediaservice.WikipediaService;
+
+import com.modules.wikipediaservice.SearchResponse;
+import com.modules.wikipediaservice.WikipediaService;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 import rx.subjects.Subject;
@@ -18,6 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MainActivity extends AppCompatActivity {
   private Subject<String, String> mInputStream;
+  private WikipediaService mWikipediaService;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -27,17 +28,14 @@ public class MainActivity extends AppCompatActivity {
   }
 
   protected void addSearchBarListener() {
+    mWikipediaService = new WikipediaService();
     mInputStream = PublishSubject.create();
     mInputStream
         .subscribeOn(Schedulers.newThread())
         .debounce(400, TimeUnit.MILLISECONDS)
         .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Action1<String>() {
-          @Override
-          public void call(String s) {
-            requestWikipediaService(s);
-          }
-        });
+        .flatMap(s -> mWikipediaService.search(s).observeOn(AndroidSchedulers.mainThread()))
+        .subscribe(this::onResponseReceived, this::onErrorReceived);
 
     EditText editText = (EditText) findViewById(R.id.search);
     TextWatcher tw = new TextWatcher() {
@@ -69,21 +67,5 @@ public class MainActivity extends AppCompatActivity {
   protected void onErrorReceived(Throwable t) {
     TextView textView = (TextView) findViewById(R.id.response);
     textView.setText(t.getMessage());
-  }
-
-  protected void requestWikipediaService(String term) {
-    WikipediaService.search(term)
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe(new Action1<SearchResponse>() {
-          @Override
-          public void call(SearchResponse searchResponse) {
-            onResponseReceived(searchResponse);
-          }
-        }, new Action1<Throwable>() {
-          @Override
-          public void call(Throwable throwable) {
-            onErrorReceived(throwable);
-          }
-        });
   }
 }
