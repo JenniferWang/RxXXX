@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 
 import rx.Observable;
-import rx.schedulers.Schedulers;
+import rx.Scheduler;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -14,11 +14,15 @@ import java.util.Map;
 
 public class WikipediaService {
   private static final String BASE_URL = "https://en.wikipedia.org/w/api.php";
-  private Map<String, SearchResponse> mCache = new HashMap<>();
 
   private Object mLock = new Object();
+  private Map<String, SearchResponse> mCache = new HashMap<>();
 
-  public WikipediaService(){}
+  private Scheduler mScheduler;
+
+  public WikipediaService(Scheduler scheduler){
+    mScheduler = scheduler;
+  }
 
   public Observable<SearchResponse> search(final String term) {
     if (term.length() == 0) {
@@ -52,6 +56,6 @@ public class WikipediaService {
           connection.disconnect();
         }
       }
-    }).subscribeOn(Schedulers.newThread()); // execute on background thread
+    }).subscribeOn(mScheduler); // execute on given scheduler
   }
 }

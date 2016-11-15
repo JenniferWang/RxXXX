@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
   }
 
   protected void addSearchBarListener() {
-    mWikipediaService = new WikipediaService();
+    mWikipediaService = new WikipediaService(Schedulers.newThread());
     mInputStream = PublishSubject.create();
     mInputStream
         .subscribeOn(Schedulers.newThread())
